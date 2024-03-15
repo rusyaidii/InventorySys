@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Button, NavDropdown, Badge } from 'react-bootstrap';
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 import { FaSignInAlt } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 
@@ -34,6 +33,22 @@ const Header = () => {
                     <Navbar.Brand href='/'>InventorySys</Navbar.Brand>
                     <Navbar.Toggle aria-controls='basic-navbar-nav'/>
                     <Navbar.Collapse id='basic-navbar-nav'>
+                        { userInfo?.role === 'admin' && (
+                            <Nav className='me-auto'>
+                                <NavDropdown title='Role Settings'>
+                                    <LinkContainer to='/new-role'>
+                                        <NavDropdown.Item>
+                                            Add New Role
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    <LinkContainer to='/roles'>
+                                        <NavDropdown.Item>
+                                            Role List
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                </NavDropdown>
+                            </Nav>
+                        ) }
                         <Nav className='ms-auto'>
                             {userInfo ? (
                                 <>

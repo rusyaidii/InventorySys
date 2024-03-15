@@ -20,6 +20,8 @@ import ProfileScreen from "./screens/ProfileScreen.jsx";
 import ProductListScreen from "./screens/ProductListScreen.jsx";
 import CreateProductScreen from "./screens/CreateProductScreen.jsx";
 import ViewProductScreen from "./screens/ViewProductScreen.jsx";
+import AddRoleScreen from "./screens/AddRoleScreen.jsx";
+import RoleListScreen from "./screens/RoleListScreen.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +32,8 @@ const router = createBrowserRouter(
       <Route path="/product" element={<ProductListScreen />} />
       {/* Private Routes */}
       <Route path="" element={<PrivateRoute />}>
+        <Route path="/new-role" element={<AddRoleScreen />} />
+        <Route path="/roles" element={<RoleListScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/new-product" element={<CreateProductScreen />} />
         <Route path="/view-product/:id" element={<ViewProductScreen />} />
