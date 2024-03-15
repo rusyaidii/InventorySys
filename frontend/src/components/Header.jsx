@@ -1,25 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, NavDropdown, Badge } from 'react-bootstrap';
 import { FaSignInAlt } from 'react-icons/fa';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { LinkContainer } from 'react-router-bootstrap';
+
+import { useLogoutMutation } from '../slices/userApiSlice';
+import { logout } from '../slices/authSlice';
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isAdmin') === 'true');
-    const location = useLocation();
+    const { userInfo } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const storedRole = localStorage.getItem('isAdmin');
-        if (storedRole === 'true') {
-          setIsLoggedIn(true);
+    const [logoutApiCall] = useLogoutMutation();
+
+    const logoutHandler = async () => {
+        try {
+            await logoutApiCall().unwrap();
+            dispatch(logout());
+            window.location.reload();
+            navigate('/');
+        } catch (err) {
+            console.log(err)
         }
-      }, [localStorage.getItem('isAdmin')]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('isAdmin');
-        setIsLoggedIn(false);
-        window.location.reload();
-    };
+    }
 
     return (
         <header>
@@ -29,15 +35,25 @@ const Header = () => {
                     <Navbar.Toggle aria-controls='basic-navbar-nav'/>
                     <Navbar.Collapse id='basic-navbar-nav'>
                         <Nav className='ms-auto'>
-                            {(!isLoggedIn && location.pathname !== '/admin') && (
+                            {userInfo ? (
+                                <>
+                                    <NavDropdown title={userInfo.name} id='username'>
+                                        <LinkContainer to='/profile'>
+                                            <NavDropdown.Item>
+                                                Profile
+                                            </NavDropdown.Item>
+                                        </LinkContainer>
+                                        <NavDropdown.Item onClick={ logoutHandler }>
+                                            <FaSignInAlt /> Logout
+                                        </NavDropdown.Item>
+                                    </NavDropdown>
+                                </>
+                            ) : (
+                                <>
                                 <Nav.Link href='./admin'>
                                     <FaSignInAlt /> Admin
                                 </Nav.Link>
-                            )}
-                            {isLoggedIn && (
-                                <Button onClick={handleLogout}>
-                                    <FaSignInAlt /> Logout
-                                </Button>
+                                </>
                             )}
                         </Nav>
                     </Navbar.Collapse>

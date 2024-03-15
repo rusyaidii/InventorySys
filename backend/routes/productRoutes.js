@@ -9,23 +9,20 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controller/productController.js";
+import { protect, checkPermission } from "../middleware/authMiddleware.js";
 
-// router.get('/product', productList);
-
-// router.post('/product', newProduct);
-
-router.post('/populate', populateProduct);
+router.post('/populate', protect, checkPermission('create'), populateProduct);
 
 router
   .route("/product")
-  .get(productList)
-  .post(newProduct);
+  .get(protect, productList)
+  .post(protect, checkPermission('create'), newProduct);
 
 router
   .route("/product/:id")
   .get(productListById)
-  .put(updateProduct)
-  .delete(deleteProduct);
+  .put(protect, checkPermission('update'), updateProduct)
+  .delete(protect, checkPermission('delete'), deleteProduct);
 
 
 export default router;

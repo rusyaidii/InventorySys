@@ -4,32 +4,33 @@ import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-import { useLoginMutation } from '../slices/userApiSlice';
+import { useRegisterMutation } from '../slices/userApiSlice';
 import { setCredentials } from '../slices/authSlice';
 import FormContainer from '../components/FormContainer';
 import Loader from '../components/Loader';
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [login, { isLoading }] = useLoginMutation();
+    const [register, { isLoading }] = useRegisterMutation();
 
     const { userInfo } = useSelector((state) => state.auth);
 
     useEffect(() => {
         if (userInfo) {
-            navigate('/product');
+            navigate('/');
         }
     }, [navigate, userInfo])
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await login({ email, password }).unwrap();
+            const res = await register({ name, email, password }).unwrap();
             dispatch(setCredentials({...res})); // Set userInfo state
         } catch (err) {
             toast.error(err?.data?.message || err.error)
@@ -38,9 +39,18 @@ const LoginScreen = () => {
 
     return (
         <FormContainer>
-            <h1>Admin Sign In</h1>
-            <Form onSubmit={ handleLogin }>
+            <h1>Register</h1>
+            <Form onSubmit={ handleRegister }>
                 <Form.Group className='my-2' controlId='username'>
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                        type='text'
+                        placeholder='Enter name'
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
+                <Form.Group className='my-2' controlId='email'>
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                         type='text'
@@ -63,11 +73,11 @@ const LoginScreen = () => {
                 { isLoading && <Loader/> }
 
                 <Button type='submit' variant='primary' className='mt-3'>
-                    Login
+                    Register
                 </Button>
             </Form>
         </FormContainer>
     )
 }
 
-export default LoginScreen
+export default RegisterScreen

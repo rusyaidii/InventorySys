@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom';
-// import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const PrivateRoute = () => {
-    const storedRole = localStorage.getItem('isAdmin');
-    return storedRole ? <Outlet/> : <Navigate to='/admin' replace/>
+    const { userInfo } = useSelector((state) => state.auth);
+    return userInfo ? <Outlet/> : <Navigate to='/admin' replace/>
 }
 
 export default PrivateRoute;

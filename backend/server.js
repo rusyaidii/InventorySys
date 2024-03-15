@@ -2,12 +2,15 @@ import express from "express";
 import path from 'path';
 import dotenv from "dotenv";
 import cors from 'cors';
+import cookieParser from "cookie-parser";
 dotenv.config();
 const port = process.env.PORT || 5000;
 
 import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import productRoutes from './routes/productRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import roleRoutes from './routes/roleRoutes.js';
 
 connectDB();
 const app = express();
@@ -23,6 +26,15 @@ app.use(
     })
 );
 
+app.use(cookieParser());
+
+// User API router
+app.use('/api/users', userRoutes);
+
+// Role API router
+app.use('/api/role', roleRoutes);
+
+// Product API router
 app.use('/api/products', productRoutes);
 
 
