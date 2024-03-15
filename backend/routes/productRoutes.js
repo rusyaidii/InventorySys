@@ -15,7 +15,7 @@ router.post('/populate', protect, checkPermission('create'), populateProduct);
 
 router
   .route("/product")
-  .get(protect, productList)
+  .get(productList)
   .post(protect, checkPermission('create'), newProduct);
 
 router
