@@ -7,8 +7,8 @@ import {
 } from "../controller/roleController.js";
 import { protect, restrict, checkPermission } from "../middleware/authMiddleware.js";
 
-router.get('/', protect, restrict('admin'),  getRoleList);
+router.get('/', protect,  getRoleList);
 
-router.post('/new', protect, checkPermission('create'), addNewRole);
+router.post('/new', protect, restrict('admin'), addNewRole);
 
 export default router;
