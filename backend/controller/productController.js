@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
+import Supplier from '../models/supplierModel.js';
 
 // @desc Get product list
 // route GET api/product
@@ -31,6 +32,7 @@ const productList = asyncHandler(async (req, res) => {
 
         // Fetch products with pagination, sorting, and filtering
         const products = await Product.find(filter)
+            .populate('supplierId')
             .sort(sortOptions)
             .skip(actualSkip)
             .limit(limitNumber);
@@ -41,7 +43,13 @@ const productList = asyncHandler(async (req, res) => {
         res.status(200).json({
             count: products.length,
             total: totalCount,
-            data: products
+            data: products.map(product => ({
+                _id: product._id,
+                productName: product.productName,
+                productPrice: product.productPrice,
+                productCat: product.productCat,
+                supplierName: product.supplierId.supplierName
+              }))
         });
     } catch (error) {
         // Handle any errors
@@ -65,6 +73,22 @@ const productCatList = asyncHandler(async (req, res) => {
 const productListById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
+
+    if (product) {
+        const supplier = await Supplier.findById(product.supplierId);
+        res.status(201).json({
+            _id: product._id,
+            productName: product.productName,
+            productPrice: product.productPrice,
+            productCat: product.productCat,
+            supplierId: product.supplierId,
+            supplierName: supplier.supplierName,
+            productImage: product.productImage
+        })
+    } else {
+        res.status(400);
+        throw new Error('Invalid data')
+    }
 
     res.status(200).json(product);
 });
@@ -104,23 +128,29 @@ const newProduct = asyncHandler(async (req, res) => {
 // @access Private
 const populateProduct = asyncHandler(async (req, res) => {
     // Check if the database already has 1000 or more products
-    const count = await Product.countDocuments();
-    if (count >= 100) {
-        res.status(400);
-        throw new Error('Database already populated with 1000 or more products.')
-    }
+    // const count = await Product.countDocuments();
+    // if (count >= 100) {
+    //     res.status(400);
+    //     throw new Error('Database already populated with 1000 or more products.')
+    // }
 
-    // Get list of supplier
-    // Get list of category
+    // Get list of supplier and randomize
+    const suppliers = await Supplier.find({});
+    const supplierIds = suppliers.map(supplier => supplier._id);
+    // Get list of category and randomize
+    const categories = await Product.distinct('productCat');
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
 
     // Generate and insert products into the database
     const productsToInsert = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
+        const randomSupplierId = supplierIds[Math.floor(Math.random() * supplierIds.length)];
+
         productsToInsert.push({
             productName: `Product ${i + 1}`,
             productPrice: Math.floor(Math.random() * 10) + 1,
-            productCat: `Antibiotic`,
-            supplierId: Math.floor(Math.random() * 100) + 1
+            productCat: randomCategory,
+            supplierId: randomSupplierId
         });
     }
     await Product.insertMany(productsToInsert);
@@ -134,6 +164,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { productName, productPrice, productCat, supplierId, productImage } = req.body;
     const product = await Product.findById(id);
+    const supplier = await Supplier.findById(supplierId);
 
     if (product) {
         product.productName = productName || product.productName;
@@ -150,6 +181,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             productPrice: updatedProduct.productPrice,
             productCat: updatedProduct.productCat,
             supplierId: updatedProduct.supplierId,
+            supplierName: supplier.supplierName,
             productImage: updatedProduct.productImage
         })
     } else {

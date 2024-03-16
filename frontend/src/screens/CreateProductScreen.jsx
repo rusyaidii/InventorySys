@@ -4,7 +4,10 @@ import { Form, Button } from 'react-bootstrap';
 import FormContainer from '../components/FormContainer';
 import { IoMdArrowRoundBack } from "react-icons/io";
 
-import { useLazyAxiosCreateProduct } from "../api/product";
+import { useLazyAxiosCreateProduct, useAxiosListCat } from "../api/product";
+import {
+    useAxiosSupplierList,
+  } from "../api/supplier";
 
 const CreateProductScreen = () => {
     const navigate = useNavigate();
@@ -12,6 +15,9 @@ const CreateProductScreen = () => {
     const [productCat, setProductCat] = useState('');
     const [productPrice, setProductPrice] = useState(0.0);
     const [supplier, setSupplier] = useState('');
+
+    const [{ data: listSupplierResp }] = useAxiosSupplierList();
+    const [{ data: listCatResp }] = useAxiosListCat();
 
     const [{ loading: createProductLoading }, createProduct] =
         useLazyAxiosCreateProduct();
@@ -36,7 +42,7 @@ const CreateProductScreen = () => {
                 supplier
             );
             console.log('Done create', data)
-            navigate('/')
+            navigate('/product')
             
           } catch (err) {
             console.log('Error - ', err.message)
@@ -66,22 +72,32 @@ const CreateProductScreen = () => {
 
                 <Form.Group className='my-2' controlId='productCat'>
                     <Form.Label>Product Category</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter product category'
-                        value={productCat}
+                    <Form.Select
                         onChange={(e) => setProductCat(e.target.value)}
-                    ></Form.Control>
+                    >
+                        <option value=''>Select Catogory</option>
+                        {listCatResp &&
+                            listCatResp.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </Form.Select>
                 </Form.Group>
 
                 <Form.Group className='my-2' controlId='supplier'>
                     <Form.Label>Supplier</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Select Supplier'
-                        value={supplier}
+                    <Form.Select
                         onChange={(e) => setSupplier(e.target.value)}
-                    ></Form.Control>
+                    >
+                        <option value=''>Select Supplier</option>
+                        {listSupplierResp &&
+                            listSupplierResp?.data.map((supplier, index) => (
+                            <option key={index} value={supplier._id}>
+                                {supplier.supplierName}
+                            </option>
+                        ))}
+                    </Form.Select>
                 </Form.Group>
 
                 <Form.Group className='my-2' controlId='productPrice'>

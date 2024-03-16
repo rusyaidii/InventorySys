@@ -7,6 +7,20 @@ export const useAxiosProductList = (query) =>
 
 export const useAxiosListCat = () => useAxios('/api/products/cat');
 
+export const useLazyAxiosProductPopulate = () => {
+  const [props, populateProduct] = useAxios(
+    { method: 'POST' },
+    { manual: true },
+  );
+  return [
+    props,
+    () =>
+      populateProduct({
+        url: `/api/products/populate`,
+      }),
+  ];
+};
+
 export const useAxiosReadProduct = (productID) => {
   const [props, refetch] = useAxios(`/api/products/product/${productID}`);
   return [props, () => refetch({ url: `/api/products/product/${productID}` })];

@@ -13,13 +13,14 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    supplierId: {
-        type: String,
-        required: true
-    },
     productImage: {
         type: String,
         required: false
+    },
+    supplierId: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: "Supplier"
     }
 }, {
     timestamps: true

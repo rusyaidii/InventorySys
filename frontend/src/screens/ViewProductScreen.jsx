@@ -7,7 +7,10 @@ import { MdCancel } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import FormContainer from '../components/FormContainer';
-import { useAxiosReadProduct, useLazyAxiosUpdateProduct } from "../api/product";
+import { useAxiosReadProduct, useLazyAxiosUpdateProduct, useAxiosListCat } from "../api/product";
+import {
+  useAxiosSupplierList,
+} from "../api/supplier";
 
 const ViewProductScreen = () => {
     const navigate = useNavigate();
@@ -17,6 +20,9 @@ const ViewProductScreen = () => {
     const [productCat, setProductCat] = useState('');
     const [productPrice, setProductPrice] = useState(0.0);
     const [supplier, setSupplier] = useState('');
+
+    const [{ data: listSupplierResp }] = useAxiosSupplierList();
+    const [{ data: listCatResp }] = useAxiosListCat();
 
     const [{ data: readProductResp },
         refetctReadProduct
@@ -70,7 +76,7 @@ const ViewProductScreen = () => {
                 supplier
             );
             console.log('Done updated', data)
-            navigate('/')
+            navigate('/product')
             
           } catch (err) {
             console.log('Error - ', err.message)
@@ -80,10 +86,10 @@ const ViewProductScreen = () => {
       <>
         <Button
           variant={"primary"}
-          onClick={(e) => navigate('/product')} // Toggle edit mode when button is clicked
+          onClick={(e) => navigate("/product")} // Toggle edit mode when button is clicked
           style={{ marginTop: "10px" }}
         >
-            <IoMdArrowRoundBack/>
+          <IoMdArrowRoundBack />
         </Button>
         <FormContainer>
           <div
@@ -118,24 +124,36 @@ const ViewProductScreen = () => {
 
             <Form.Group className="my-2" controlId="productCat">
               <Form.Label>Product Category</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter product category"
+              <Form.Select
                 value={productCat}
                 onChange={(e) => setProductCat(e.target.value)}
                 disabled={!isEdit}
-              ></Form.Control>
+              >
+                <option value="">Select Catogory</option>
+                {listCatResp &&
+                  listCatResp.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+              </Form.Select>
             </Form.Group>
 
             <Form.Group className="my-2" controlId="supplier">
               <Form.Label>Supplier</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Select Supplier"
+              <Form.Select
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
                 disabled={!isEdit}
-              ></Form.Control>
+              >
+                <option value="">Select Supplier</option>
+                {listSupplierResp &&
+                  listSupplierResp?.data.map((supplier, index) => (
+                    <option key={index} value={supplier._id}>
+                      {supplier.supplierName}
+                    </option>
+                  ))}
+              </Form.Select>
             </Form.Group>
 
             <Form.Group className="my-2" controlId="productPrice">

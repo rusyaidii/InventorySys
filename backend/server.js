@@ -8,6 +8,7 @@ const port = process.env.PORT || 5000;
 
 import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import supplierRoutes from './routes/supplierRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import roleRoutes from './routes/roleRoutes.js';
@@ -36,6 +37,9 @@ app.use('/api/role', roleRoutes);
 
 // Product API router
 app.use('/api/products', productRoutes);
+
+// Supplier API router
+app.use('/api/suppliers', supplierRoutes);
 
 
 if(process.env.NODE_ENV === 'production'){

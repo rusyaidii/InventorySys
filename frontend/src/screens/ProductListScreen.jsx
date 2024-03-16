@@ -103,7 +103,7 @@ const ProductListScreen = () => {
     //{ field: '_id', headerName: 'ID', width: 70, valueGetter: (params) => params.rowIndex + 1 },
     { field: "productName", headerName: "Product Name", width: 150 },
     { field: "productCat", headerName: "Product Category", width: 130 },
-    { field: "supplierId", headerName: "Supplier ID", width: 150 },
+    { field: "supplierName", headerName: "Supplier Name", width: 250 },
     {
       field: "productPrice",
       headerName: "Product Price",

@@ -4,7 +4,9 @@ import { FaSignInAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
+import { toast } from 'react-toastify';
 
+import { useLazyAxiosProductPopulate } from '../api/product';
 import { useLogoutMutation } from '../slices/userApiSlice';
 import { logout } from '../slices/authSlice';
 
@@ -12,6 +14,8 @@ const Header = () => {
     const { userInfo } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [, populateProduct] = useLazyAxiosProductPopulate();
 
     const [logoutApiCall] = useLogoutMutation();
 
@@ -25,6 +29,17 @@ const Header = () => {
             console.log(err)
         }
     }
+
+    const handlePopulate = async () => {
+        try {
+          const resp = await populateProduct();
+          toast.success(resp)
+        } catch (err) {
+          toast.error("Error - ", err.message);
+        } finally {
+          window.location.reload();
+        }
+      };
 
     return (
         <header>
@@ -47,6 +62,9 @@ const Header = () => {
                                         </NavDropdown.Item>
                                     </LinkContainer>
                                 </NavDropdown>
+                                <Nav.Link onClick={handlePopulate}>
+                                    Populate Product
+                                </Nav.Link>
                             </Nav>
                         ) }
                         <Nav className='ms-auto'>
