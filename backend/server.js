@@ -51,3 +51,5 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`Server start at ${port}`));
+
+export default app;
