@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Popover, OverlayTrigger } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -36,6 +36,16 @@ const LoginScreen = () => {
         }
     };
 
+    const popoverHoverFocus = (
+        <Popover id="popover-trigger-hover-focus" title="Popover bottom">
+          <strong>Admin</strong><br/>Email: cedi@email.com<br/>Password: 123456
+          <br/><br/>
+          <strong>Manager</strong><br/>Email: thomas@email.com<br/>Password: 123456
+          <br/><br/>
+          <strong>User</strong><br/>Email: jacob@email.com<br/>Password: 123456
+        </Popover>
+      );
+
     return (
         <FormContainer>
             <h1>Admin Sign In</h1>
@@ -62,9 +72,19 @@ const LoginScreen = () => {
 
                 { isLoading && <Loader/> }
 
-                <Button type='submit' variant='primary' className='mt-3'>
-                    Login
-                </Button>
+                <div className="d-flex justify-content-between">
+                    <Button type='submit' variant='primary' className='mt-3'>
+                        Login
+                    </Button>
+
+                    <OverlayTrigger
+                        trigger={['hover', 'focus']}
+                        placement="bottom"
+                        overlay={popoverHoverFocus}
+                    >
+                        <Button className='mt-3'>Demo Credential</Button>
+                    </OverlayTrigger>
+                </div>
             </Form>
         </FormContainer>
     )
