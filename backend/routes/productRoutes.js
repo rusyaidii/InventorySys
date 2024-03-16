@@ -3,6 +3,7 @@ const router = express.Router();
 
 import {
   productList,
+  productCatList,
   productListById,
   populateProduct,
   newProduct,
@@ -12,6 +13,8 @@ import {
 import { protect, checkPermission } from "../middleware/authMiddleware.js";
 
 router.post('/populate', protect, checkPermission('create'), populateProduct);
+
+router.get('/cat', productCatList);
 
 router
   .route("/product")

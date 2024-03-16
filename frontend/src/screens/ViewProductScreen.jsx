@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { FaEdit } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 import FormContainer from '../components/FormContainer';
 import { useAxiosReadProduct, useLazyAxiosUpdateProduct } from "../api/product";
@@ -76,73 +77,92 @@ const ViewProductScreen = () => {
           }
     }
     return (
+      <>
+        <Button
+          variant={"primary"}
+          onClick={(e) => navigate('/product')} // Toggle edit mode when button is clicked
+          style={{ marginTop: "10px" }}
+        >
+            <IoMdArrowRoundBack/>
+        </Button>
         <FormContainer>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                <h1 style={{ marginRight: '10px', flex: '1' }}>Update Product Details</h1>
-                <Button 
-                    variant={isEdit ? 'danger' : 'primary'}
-                    onClick={toggleEditMode} // Toggle edit mode when button is clicked
-                    style={{ marginLeft: '10px' }}
-                >
-                    {isEdit ? <MdCancel/> : <FaEdit />}
-                </Button>
-            </div>
-            <Form onSubmit={ submitHandler }>
-                <Form.Group className='my-2' controlId='productName'>
-                    <Form.Label>Product Name</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter product name'
-                        value={productName}
-                        onChange={(e) => setProductName(e.target.value)}
-                        disabled={!isEdit}
-                    ></Form.Control>
-                </Form.Group>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
+            <h1 style={{ marginRight: "10px", flex: "1" }}>
+              Update Product Details
+            </h1>
+            <Button
+              variant={isEdit ? "danger" : "primary"}
+              onClick={toggleEditMode} // Toggle edit mode when button is clicked
+              style={{ marginLeft: "10px" }}
+            >
+              {isEdit ? <MdCancel /> : <FaEdit />}
+            </Button>
+          </div>
+          <Form onSubmit={submitHandler}>
+            <Form.Group className="my-2" controlId="productName">
+              <Form.Label>Product Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter product name"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                disabled={!isEdit}
+              ></Form.Control>
+            </Form.Group>
 
-                <Form.Group className='my-2' controlId='productCat'>
-                    <Form.Label>Product Category</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter product category'
-                        value={productCat}
-                        onChange={(e) => setProductCat(e.target.value)}
-                        disabled={!isEdit}
-                    ></Form.Control>
-                </Form.Group>
+            <Form.Group className="my-2" controlId="productCat">
+              <Form.Label>Product Category</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter product category"
+                value={productCat}
+                onChange={(e) => setProductCat(e.target.value)}
+                disabled={!isEdit}
+              ></Form.Control>
+            </Form.Group>
 
-                <Form.Group className='my-2' controlId='supplier'>
-                    <Form.Label>Supplier</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Select Supplier'
-                        value={supplier}
-                        onChange={(e) => setSupplier(e.target.value)}
-                        disabled={!isEdit}
-                    ></Form.Control>
-                </Form.Group>
+            <Form.Group className="my-2" controlId="supplier">
+              <Form.Label>Supplier</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Select Supplier"
+                value={supplier}
+                onChange={(e) => setSupplier(e.target.value)}
+                disabled={!isEdit}
+              ></Form.Control>
+            </Form.Group>
 
-                <Form.Group className='my-2' controlId='productPrice'>
-                    <Form.Label>Product Price</Form.Label>
-                    <Form.Control
-                        type='text'
-                        placeholder='Enter product price'
-                        value={productPrice}
-                        onChange={handlePriceChange}
-                        disabled={!isEdit}
-                    ></Form.Control>
-                </Form.Group>
+            <Form.Group className="my-2" controlId="productPrice">
+              <Form.Label>Product Price</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter product price"
+                value={productPrice}
+                onChange={handlePriceChange}
+                disabled={!isEdit}
+              ></Form.Control>
+            </Form.Group>
 
-                {isEdit && (<Button 
-                    type='submit' 
-                    variant='primary' 
-                    className='mt-3'
-                    disabled={createUpdateLoading}
-                >
-                    Update
-                </Button>)}
-            </Form>
+            {isEdit && (
+              <Button
+                type="submit"
+                variant="primary"
+                className="mt-3"
+                disabled={createUpdateLoading}
+              >
+                Update
+              </Button>
+            )}
+          </Form>
         </FormContainer>
-    )
+      </>
+    );
 }
 
 export default ViewProductScreen

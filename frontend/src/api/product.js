@@ -5,6 +5,8 @@ import { useAxiosQuery } from '../hooks/';
 export const useAxiosProductList = (query) =>
   useAxiosQuery('/api/products/product', query);
 
+export const useAxiosListCat = () => useAxios('/api/products/cat');
+
 export const useAxiosReadProduct = (productID) => {
   const [props, refetch] = useAxios(`/api/products/product/${productID}`);
   return [props, () => refetch({ url: `/api/products/product/${productID}` })];

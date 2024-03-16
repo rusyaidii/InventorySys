@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import FormContainer from '../components/FormContainer';
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 import { useLazyAxiosCreateProduct } from "../api/product";
 
@@ -42,6 +43,14 @@ const CreateProductScreen = () => {
           }
     }
     return (
+        <>
+        <Button
+          variant={"primary"}
+          onClick={(e) => navigate('/product')} // Toggle edit mode when button is clicked
+          style={{ marginTop: "10px" }}
+        >
+            <IoMdArrowRoundBack/>
+        </Button>
         <FormContainer>
             <h1>Add New Product</h1>
             <Form onSubmit={ submitHandler }>
@@ -95,6 +104,7 @@ const CreateProductScreen = () => {
                 </Button>
             </Form>
         </FormContainer>
+    </>
     )
 }
 
