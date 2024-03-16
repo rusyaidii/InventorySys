@@ -29,12 +29,13 @@ const productList = asyncHandler(async (req, res) => {
         // Calculate skip value, ensuring it's not negative
         const skipValue = Math.max(0, (validPageNumber - 1) * limitNumber);
         const actualSkip = skipValue === 0 ? 0 : skipValue + 1;
+        const actualValue = actualSkip + 1;
 
         // Fetch products with pagination, sorting, and filtering
         const products = await Product.find(filter)
             .populate('supplierId')
             .sort(sortOptions)
-            .skip(actualSkip)
+            .skip(actualValue)
             .limit(limitNumber);
 
         // Fetch the total count of products (for pagination)
@@ -143,7 +144,7 @@ const populateProduct = asyncHandler(async (req, res) => {
 
     // Generate and insert products into the database
     const productsToInsert = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 1000; i++) {
         const randomSupplierId = supplierIds[Math.floor(Math.random() * supplierIds.length)];
 
         productsToInsert.push({
