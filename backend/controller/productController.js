@@ -4,21 +4,18 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import multer from 'multer';
 import crypto from 'crypto'
 import sharp from 'sharp';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import Product from '../models/productModel.js';
 import Supplier from '../models/supplierModel.js';
 
-const bucketName = process.env.BUCKET_NAME || 'inventorysys-bucket';
-const bucketRegion = process.env.BUCKET_REGION || 'ap-southeast-1';
-const s3AccessID = process.env.S3_ACCESS_ID || 'AKIA2UC3EML434RGEJAI';
-const s3SecretKey = process.env.S3_SECRET_KEY || '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';
-
 const s3 = new S3Client({
     credentials: {
-        accessKeyId: s3AccessID,
-        secretAccessKey: s3SecretKey,
+        accessKeyId: process.env.ACCESS_KEY,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY,
     },
-    region: bucketRegion,
+    region: process.env.BUCKET_REGION,
 })
 
 const storage = multer.memoryStorage();
@@ -102,7 +99,7 @@ const productListById = asyncHandler(async (req, res) => {
         let url = null;
         if (product.productImage) {
             const getObjectParams = {
-                Bucket: bucketName,
+                Bucket: process.env.BUCKET_NAME,
                 Key: product.productImage,
             };
 
@@ -262,7 +259,7 @@ const uploadProductImage = asyncHandler(async (req, res) => {
         const randImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
         const imageName = randImageName();
         const params = {
-          Bucket: bucketName,
+          Bucket: process.env.BUCKET_NAME,
           Key: imageName,
           Body: buffer,
           ContentType: file.mimetype,
