@@ -39,7 +39,6 @@ const restrict = (...role) => {
 const checkPermission = (permission) => {
     return async (req, res, next) => {
         try {
-            console.log(req.user);
             const userRole = req.user.role; // Assuming req.user.role contains the role ID
             const role = await Role.findOne({ name: userRole });
             

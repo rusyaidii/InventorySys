@@ -1,6 +1,28 @@
 import asyncHandler from 'express-async-handler';
+import { PutObjectCommand, S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import multer from 'multer';
+import crypto from 'crypto'
+import sharp from 'sharp';
+
 import Product from '../models/productModel.js';
 import Supplier from '../models/supplierModel.js';
+
+const bucketName = process.env.BUCKET_NAME || 'inventorysys-bucket';
+const bucketRegion = process.env.BUCKET_REGION || 'ap-southeast-1';
+const s3AccessID = process.env.S3_ACCESS_ID || 'AKIA2UC3EML434RGEJAI';
+const s3SecretKey = process.env.S3_SECRET_KEY || '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';
+
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: s3AccessID,
+        secretAccessKey: s3SecretKey,
+    },
+    region: bucketRegion,
+})
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // @desc Get product list
 // route GET api/product
@@ -49,6 +71,7 @@ const productList = asyncHandler(async (req, res) => {
                 productName: product.productName,
                 productPrice: product.productPrice,
                 productCat: product.productCat,
+                productImage: product.productImage,
                 supplierName: product.supplierId.supplierName
               }))
         });
@@ -76,22 +99,30 @@ const productListById = asyncHandler(async (req, res) => {
     const product = await Product.findById(id);
 
     if (product) {
+        let url = null;
+        if (product.productImage) {
+            const getObjectParams = {
+                Bucket: bucketName,
+                Key: product.productImage,
+            };
+
+            const command = new GetObjectCommand(getObjectParams);
+            url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+        }
         const supplier = await Supplier.findById(product.supplierId);
-        res.status(201).json({
+        res.status(200).json({
             _id: product._id,
             productName: product.productName,
             productPrice: product.productPrice,
             productCat: product.productCat,
             supplierId: product.supplierId,
             supplierName: supplier.supplierName,
-            productImage: product.productImage
+            productImage: url
         })
     } else {
         res.status(400);
         throw new Error('Invalid data')
     }
-
-    res.status(200).json(product);
 });
 
 // @desc Create new product
@@ -207,4 +238,60 @@ const deleteProduct = asyncHandler(async (req, res) => {
     }
 });
 
-export { productList, productCatList, productListById, newProduct, populateProduct, updateProduct, deleteProduct };
+// @desc Upload product image
+// route POST api/upload
+// @access Private
+const uploadProductImage = asyncHandler(async (req, res) => {
+  upload.single("file")(req, res, async function (err) {
+    if (err) {
+      res.status(400);
+      throw new Error("Failed to upload file!");
+    } else {
+      const file = req.file;
+      const { id } = req.body;
+
+      if (!file) {
+        res.status(400);
+        throw new Error("No file uploaded!");
+      }
+
+      try {
+        // Resize the image
+        const buffer = await sharp(file.buffer).resize({ height: 1080, width: 1920, fit: "contain" }).toBuffer();
+
+        const randImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
+        const imageName = randImageName();
+        const params = {
+          Bucket: bucketName,
+          Key: imageName,
+          Body: buffer,
+          ContentType: file.mimetype,
+        };
+
+        const command = new PutObjectCommand(params);
+        await s3.send(command);
+
+        const product = await Product.findById(id);
+
+        if (product) {
+            product.productImage = imageName || product.productImage
+    
+            const updatedProduct = await product.save();
+    
+            res.status(200).json({
+                _id: updatedProduct._id,
+                productName: updatedProduct.productName,
+            })
+        } else {
+            res.status(404);
+            throw new Error('Product not found!');
+        }
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Failed to upload file to S3.");
+      }
+    }
+  });
+});
+
+export { productList, productCatList, productListById, newProduct, populateProduct, updateProduct, deleteProduct, uploadProductImage };

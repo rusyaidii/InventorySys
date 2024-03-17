@@ -9,12 +9,15 @@ import {
   newProduct,
   updateProduct,
   deleteProduct,
+  uploadProductImage,
 } from "../controller/productController.js";
 import { protect, checkPermission } from "../middleware/authMiddleware.js";
 
 router.post('/populate', protect, checkPermission('create'), populateProduct);
 
 router.get('/cat', productCatList);
+
+router.post('/upload', protect, checkPermission('update'), uploadProductImage);
 
 router
   .route("/product")

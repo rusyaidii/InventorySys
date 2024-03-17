@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Image } from 'react-bootstrap';
 import { FaEdit } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -19,6 +19,7 @@ const ViewProductScreen = () => {
     const [productName, setProductName] = useState('');
     const [productCat, setProductCat] = useState('');
     const [productPrice, setProductPrice] = useState(0.0);
+    const [productImage, setProductImage] = useState('');
     const [supplier, setSupplier] = useState('');
 
     const [{ data: listSupplierResp }] = useAxiosSupplierList();
@@ -49,6 +50,7 @@ const ViewProductScreen = () => {
             setProductCat(readProductResp.productCat);
             setProductPrice(readProductResp.productPrice);
             setSupplier(readProductResp.supplierId);
+            setProductImage(readProductResp.productImage);
         }
     }, [readProductResp]);
 
@@ -111,6 +113,11 @@ const ViewProductScreen = () => {
             </Button>
           </div>
           <Form onSubmit={submitHandler}>
+            {productImage ? (
+              <Image src={productImage} thumbnail />
+            ) : (
+              <p style={{ border: '1px solid #000' }}>No image available</p>
+            )}
             <Form.Group className="my-2" controlId="productName">
               <Form.Label>Product Name</Form.Label>
               <Form.Control
