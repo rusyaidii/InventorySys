@@ -13,6 +13,7 @@ This project is a simple MERN Stack with user access permission
 * NodeJS as backend equipped with MongoDB
 * Have API to populate dummy data
 * Tested with Jest Supertest - Unit Test
+* **Integrated with AWS S3 for image storing**
 
 DEMO
 ============
